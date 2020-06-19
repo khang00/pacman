@@ -6,6 +6,8 @@ Pacman agents (in searchAgents.py).
 import util
 import sys
 from util import Queue
+from util import PriorityQueue
+from collections import defaultdict
 from util import Stack
 from time import sleep
 
@@ -64,14 +66,35 @@ def depthFirstSearch(problem):
     return [Directions.EAST, Directions.EAST]
 
 def breadthFirstSearch(problem):
-    '''
-    return a path to the goal
-    '''
-    # TODO
+    return [Directions.EAST, Directions.EAST]
 
 
 def uniformCostSearch(problem):
-    return [Directions.EAST, Directions.EAST]
+    frontier = PriorityQueue()
+    frontier.push((problem.getStartState(), Directions.STOP, 0), 0)
+    expanded = []
+    path = defaultdict(list)
+    while not frontier.isEmpty():
+        current_state = frontier.pop()
+        expanded.append(current_state)
+        if problem.isGoalState(current_state[0]):
+            return compute_actions(path, current_state)
+        successors = problem.getSuccessors(current_state[0])
+        for state in successors:
+            if state not in expanded and not frontier.does_contain(state):
+                frontier.push(state, current_state[2] + state[2])
+                path[state] = current_state
+    return path
+
+
+def compute_actions(path, goal):
+    actions = []
+    i = goal
+    actions.insert(0, goal[1])
+    while path[i][1] != Directions.STOP:
+        actions.insert(0, path[i][1])
+        i = path[i]
+    return actions
 
 
 def nullHeuristic(state, problem=None):
@@ -83,10 +106,7 @@ def nullHeuristic(state, problem=None):
 
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    '''
-    return a path to the goal
-    '''
-    # TODO
+    return [Directions.EAST, Directions.EAST]
 
 
 # Abbreviations
