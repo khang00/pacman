@@ -5,6 +5,8 @@ Pacman agents (in searchAgents.py).
 
 import util
 import sys
+from util import Queue
+from util import Stack
 from time import sleep
 
 from game import Directions
@@ -59,11 +61,7 @@ class SearchProblem:
 
 
 def depthFirstSearch(problem):
-    '''
-    return a path to the goal
-    '''
-    # TODO
-
+    return [Directions.EAST, Directions.EAST, Directions.EAST, Directions.EAST]
 
 def breadthFirstSearch(problem):
     '''

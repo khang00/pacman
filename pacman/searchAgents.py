@@ -44,7 +44,7 @@ class SearchAgent(Agent):
         print('[SearchAgent] using problem type ' + prob)
 
     def registerInitialState(self, state):
-        """
+        """]
         This is the first time that the agent sees the layout of the game
         board. Here, we choose a path to the goal. In this phase, the agent
         should compute the path to the goal and store it in a local variable.
