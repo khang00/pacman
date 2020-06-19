@@ -61,7 +61,7 @@ class SearchProblem:
 
 
 def depthFirstSearch(problem):
-    return [Directions.EAST, Directions.EAST, Directions.EAST, Directions.EAST]
+    return [Directions.EAST, Directions.EAST]
 
 def breadthFirstSearch(problem):
     '''
@@ -71,10 +71,7 @@ def breadthFirstSearch(problem):
 
 
 def uniformCostSearch(problem):
-    '''
-    return a path to the goal
-    '''
-    # TODO
+    return [Directions.EAST, Directions.EAST]
 
 
 def nullHeuristic(state, problem=None):

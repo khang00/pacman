@@ -21,7 +21,7 @@ class RandomAgent(Agent):
         return actions[0]
 
 class SearchAgent(Agent):
-    def __init__(self, fn='depthFirstSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
+    def __init__(self, fn='uniformCostSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
         if fn not in dir(search):
             raise AttributeError, fn + ' is not a search function in search.py.'
         func = getattr(search, fn)
@@ -129,20 +129,23 @@ class FoodSearchProblem:
         return cost
 
 class BFSFoodSearchAgent(SearchAgent):
-    # TODO
-    pass
+    def __init__(self, fn='breadthFirstSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
+        SearchAgent.__init__(self, fn, prob, heuristic)
+
 
 class DFSFoodSearchAgent(SearchAgent):
-    # TODO
-    pass
+    def __init__(self, fn='depthFirstSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
+        SearchAgent.__init__(self, fn, prob, heuristic)
+
 
 class UCSFoodSearchAgent(SearchAgent):
-    # TODO
-    pass
+    def __init__(self, fn='uniformCostSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
+        SearchAgent.__init__(self, fn, prob, heuristic)
 
 class AStarFoodSearchAgent(SearchAgent):
-    # TODO
-    pass
+    def __init__(self, fn='aStarSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
+        SearchAgent.__init__(self, fn, prob, heuristic)
+
 
 def foodHeuristic(state, problem):
     # TODO
