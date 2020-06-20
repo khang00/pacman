@@ -74,7 +74,8 @@ class SearchAgent(Agent):
         if i < len(self.actions):
             return self.actions[i]
         else:
-            return Directions.STOP
+            self.registerInitialState(state)
+            return self.actions[0]
        
 
 class FoodSearchProblem:
