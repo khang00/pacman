@@ -157,26 +157,40 @@ class UCSFoodSearchAgent(SearchAgent):
         i = self.actionIndex
         self.actionIndex += 1
         if i < len(self.actions):
-            ghost_positions = [(int(x), int(y)) for (x, y) in state.getGhostPositions()]
-            current_position = state.getPacmanPosition()
-            for position in ghost_positions:
-                x, y = position
-                if (current_position[0] - 1, current_position[1]) == (x + 1, y) or (current_position[0] + 1, current_position[1]) == (x - 1, y):
-                    self.registerInitialState(state)
-                    self.actionIndex = 0
-                    i = self.actionIndex
-                    self.actionIndex += 1
-                    return self.actions[i]
-                if (current_position[0], current_position[1] + 1) == (x, y - 1) or (current_position[0], current_position[1] - 1) == (x, y + 1):
-                    self.registerInitialState(state)
-                    self.actionIndex = 0
-                    i = self.actionIndex
-                    self.actionIndex += 1
-                    return self.actions[i]
+            if self.is_next_action_die(state, self.actions[i]):
+                self.registerInitialState(state)
+                self.actionIndex = 0
+                i = self.actionIndex
+                self.actionIndex += 1
             return self.actions[i]
         else:
             self.registerInitialState(state)
-            return self.getAction(state)
+            self.actionIndex = 0
+            i = self.actionIndex
+            self.actionIndex += 1
+        return self.actions[i]
+
+    def is_next_action_die(self, state, action):
+        ghost_positions = [(int(x), int(y)) for (x, y) in state.getGhostPositions()]
+        current_position = state.getPacmanPosition()
+        for position in ghost_positions:
+            if action == Directions.WEST and (current_position[0] - 1, current_position[1]) == position:
+                return True
+            if (action == Directions.WEST or action == Directions.NORTH) and (current_position[0] - 1, current_position[1] + 1) == position:
+                return True
+            if action == Directions.NORTH and (current_position[0], current_position[1] + 1) == position:
+                return True
+            if (action == Directions.EAST or action == Directions.NORTH) and (current_position[0] + 1, current_position[1] + 1) == position:
+                return True
+            if action == Directions.EAST and (current_position[0] + 1, current_position[1]) == position:
+                return True
+            if (action == Directions.EAST or action == Directions.SOUTH) and (current_position[0] + 1, current_position[1] - 1) == position:
+                return True
+            if action == Directions.SOUTH and (current_position[0], current_position[1] - 1) == position:
+                return True
+            if (action == Directions.WEST or action == Directions.SOUTH) and (current_position[0] - 1, current_position[1] - 1) == position:
+                return True
+        pass
 
 
 class AStarFoodSearchAgent(SearchAgent):
