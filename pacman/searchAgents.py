@@ -144,6 +144,40 @@ class UCSFoodSearchAgent(SearchAgent):
     def __init__(self, fn='uniformCostSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
         SearchAgent.__init__(self, fn, prob, heuristic)
 
+    def getAction(self, state):
+        """
+        Returns the next action in the path chosen earlier (in
+        registerInitialState).  Return Directions.STOP if there is no further
+        action to take.
+
+        state: a GameState object (pacman.py)
+        """
+        if 'actionIndex' not in dir(self):
+            SearchAgent.actionIndex = 0
+        i = self.actionIndex
+        self.actionIndex += 1
+        if i < len(self.actions):
+            ghost_positions = [(int(x), int(y)) for (x, y) in state.getGhostPositions()]
+            current_position = state.getPacmanPosition()
+            for position in ghost_positions:
+                x, y = position
+                if (current_position[0] - 1, current_position[1]) == (x + 1, y) or (current_position[0] + 1, current_position[1]) == (x - 1, y):
+                    self.registerInitialState(state)
+                    self.actionIndex = 0
+                    i = self.actionIndex
+                    self.actionIndex += 1
+                    return self.actions[i]
+                if (current_position[0], current_position[1] + 1) == (x, y - 1) or (current_position[0], current_position[1] - 1) == (x, y + 1):
+                    self.registerInitialState(state)
+                    self.actionIndex = 0
+                    i = self.actionIndex
+                    self.actionIndex += 1
+                    return self.actions[i]
+            return self.actions[i]
+        else:
+            self.registerInitialState(state)
+            return self.getAction(state)
+
 
 class AStarFoodSearchAgent(SearchAgent):
     def __init__(self, fn='aStarSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):

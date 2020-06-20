@@ -92,13 +92,15 @@ def uniformCostSearch(problem):
                 path[state] = current_state
     return path
 
+
 def is_next_move_die(next_position, ghost_positions):
-    for postion in ghost_positions:
-        x, y = postion
+    for position in ghost_positions:
+        x, y = position
         if next_position == (x + 1, y) or next_position == (x - 1, y):
             return True
         if next_position == (x, y - 1) or next_position == (x, y + 1):
             return True
+
 
 def compute_actions(path, goal):
     actions = []
@@ -107,7 +109,7 @@ def compute_actions(path, goal):
     while path[i][1] != Directions.STOP:
         actions.insert(0, path[i][1])
         i = path[i]
-    return [actions[0]]
+    return actions
 
 
 def nullHeuristic(state, problem=None):
