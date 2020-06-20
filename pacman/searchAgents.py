@@ -128,6 +128,7 @@ class FoodSearchProblem:
             cost += 1
         return cost
 
+
 class BFSFoodSearchAgent(SearchAgent):
     def __init__(self, fn='breadthFirstSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
         SearchAgent.__init__(self, fn, prob, heuristic)
@@ -141,6 +142,7 @@ class DFSFoodSearchAgent(SearchAgent):
 class UCSFoodSearchAgent(SearchAgent):
     def __init__(self, fn='uniformCostSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
         SearchAgent.__init__(self, fn, prob, heuristic)
+
 
 class AStarFoodSearchAgent(SearchAgent):
     def __init__(self, fn='aStarSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
