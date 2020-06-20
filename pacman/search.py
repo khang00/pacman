@@ -73,16 +73,18 @@ def uniformCostSearch(problem):
     frontier = PriorityQueue()
     frontier.push((problem.getStartState(), Directions.STOP, 0), 0)
     expanded = []
+    current_cost = 0
     path = defaultdict(list)
     while not frontier.isEmpty():
         current_state = frontier.pop()
         expanded.append(current_state)
+        current_cost = current_cost + current_state[2]
         if problem.isGoalState(current_state[0]):
             return compute_actions(path, current_state)
         successors = problem.getSuccessors(current_state[0])
         for state in successors:
             if state not in expanded and not frontier.does_contain(state):
-                frontier.push(state, current_state[2] + state[2])
+                frontier.push(state, current_cost + state[2])
                 path[state] = current_state
     return path
 
