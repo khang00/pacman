@@ -1,6 +1,8 @@
 from game import Directions
 from game import Agent
 from game import Actions
+from util import manhattanDistance
+from collections import defaultdict
 import sys
 import util
 import time
@@ -75,7 +77,10 @@ class SearchAgent(Agent):
             return self.actions[i]
         else:
             self.registerInitialState(state)
-            return self.actions[0]
+            self.actionIndex = 0
+            i = self.actionIndex
+            self.actionIndex += 1
+            return self.actions[i]
        
 
 class FoodSearchProblem:
@@ -93,7 +98,21 @@ class FoodSearchProblem:
         self.ghostPositions = [(int(x), int(y)) for (x, y) in startingGameState.getGhostPositions()]
         self.startingGameState = startingGameState
         self._expanded = 0 # DO NOT CHANGE
-        self.heuristicInfo = {} # A dictionary for the heuristic to store information
+        self.heuristicInfo = defaultdict(list)  # A dictionary for the heuristic to store information
+        self.foodPosition = []
+
+        for x in range(0, self.start[1].width):
+            for y in range(0, self.start[1].height):
+                if self.start[1].data[x][y]:
+                    self.foodPosition.append((x, y))
+        '''
+        for x in range(0, self.start[1].width):
+            for y in range(0, self.start[1].height):
+                heuristic = 0
+                for foodPos in self.foodPosition:
+                    heuristic = heuristic + manhattanDistance((x, y), foodPos)
+                self.heuristicInfo[(x, y)] = heuristic
+        '''
 
     def getStartState(self):
         return self.start
@@ -146,14 +165,24 @@ class UCSFoodSearchAgent(SearchAgent):
 
 
 class AStarFoodSearchAgent(SearchAgent):
-    def __init__(self, fn='aStarSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
+    def __init__(self, fn='aStarSearch', prob='FoodSearchProblem', heuristic='foodHeuristic'):
+        SearchAgent.__init__(self, fn, prob, heuristic)
+
+class AStarGhostEvadeAgent(SearchAgent):
+    def __init__(self, fn='aStarSearch', prob='FoodSearchProblem', heuristic='ghostHeuristic'):
         SearchAgent.__init__(self, fn, prob, heuristic)
 
 
 def foodHeuristic(state, problem):
-    # TODO
-    pass
+    heuristic = manhattanDistance(state[0][0], problem.foodPosition[0])
+    for foodPos in problem.foodPosition:
+        heuristic = min(heuristic, manhattanDistance(state[0][0], foodPos))
+    return heuristic
 
 def ghostHeuristic(state, problem):
-    # TODO
-    pass
+    heuristic = manhattanDistance(state[0][0], problem.ghostPositions[0])
+    detect_range = 3
+    if heuristic > detect_range:
+        return 0
+    else:
+        return heuristic % detect_range
