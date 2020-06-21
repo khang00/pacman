@@ -1,11 +1,11 @@
-from game import Directions
-from game import Agent
-from game import Actions
-import sys
-import util
-import time
-import search
 import random
+import time
+
+import search
+from game import Actions
+from game import Agent
+from game import Directions
+
 
 class GoWestAgent(Agent):
     def getAction(self, state):
@@ -14,11 +14,13 @@ class GoWestAgent(Agent):
         else:
             return Directions.STOP
 
+
 class RandomAgent(Agent):
     def getAction(self, state):
         actions = state.getLegalPacmanActions()
         random.shuffle(actions)
         return actions[0]
+
 
 class SearchAgent(Agent):
     def __init__(self, fn='uniformCostSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
@@ -37,7 +39,7 @@ class SearchAgent(Agent):
                 raise AttributeError, heuristic + ' is not a function in searchAgents.py or search.py.'
             print('[SearchAgent] using function %s and heuristic %s' % (fn, heuristic))
             self.searchFunction = lambda x: func(x, heuristic=heur)
-        
+
         if prob not in globals().keys() or not prob.endswith('Problem'):
             raise AttributeError, prob + ' is not a search problem type in SearchAgents.py.'
         self.searchType = globals()[prob]
@@ -54,8 +56,8 @@ class SearchAgent(Agent):
         """
         if self.searchFunction == None: raise Exception, "No search function provided for SearchAgent"
         starttime = time.time()
-        problem = self.searchType(state) # Makes a new search problem
-        self.actions  = self.searchFunction(problem) # Find a path
+        problem = self.searchType(state)  # Makes a new search problem
+        self.actions = self.searchFunction(problem)  # Find a path
         totalCost = problem.getCostOfActions(self.actions)
         print('Path found with total cost of %d in %.1f seconds' % (totalCost, time.time() - starttime))
         if '_expanded' in dir(problem): print('Search nodes expanded: %d' % problem._expanded)
@@ -76,7 +78,7 @@ class SearchAgent(Agent):
         else:
             self.registerInitialState(state)
             return self.actions[0]
-       
+
 
 class FoodSearchProblem:
     """
@@ -87,13 +89,14 @@ class FoodSearchProblem:
       pacmanPosition: a tuple (x,y) of integers specifying Pacman's position
       foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food
     """
+
     def __init__(self, startingGameState):
         self.start = (startingGameState.getPacmanPosition(), startingGameState.getFood())
         self.walls = startingGameState.getWalls()
         self.ghostPositions = [(int(x), int(y)) for (x, y) in startingGameState.getGhostPositions()]
         self.startingGameState = startingGameState
-        self._expanded = 0 # DO NOT CHANGE
-        self.heuristicInfo = {} # A dictionary for the heuristic to store information
+        self._expanded = 0  # DO NOT CHANGE
+        self.heuristicInfo = {}  # A dictionary for the heuristic to store information
 
     def getStartState(self):
         return self.start
@@ -104,9 +107,9 @@ class FoodSearchProblem:
     def getSuccessors(self, state):
         "Returns successor states, the actions they require, and a cost of 1."
         successors = []
-        self._expanded += 1 # DO NOT CHANGE
+        self._expanded += 1  # DO NOT CHANGE
         for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            x,y = state[0]
+            x, y = state[0]
             dx, dy = Actions.directionToVector(direction)
             nextx, nexty = int(x + dx), int(y + dy)
             if not self.walls[nextx][nexty]:
@@ -118,7 +121,7 @@ class FoodSearchProblem:
     def getCostOfActions(self, actions):
         """Returns the cost of a particular sequence of actions.  If those actions
         include an illegal move, return 999999"""
-        x,y= self.getStartState()[0]
+        x, y = self.getStartState()[0]
         cost = 0
         for action in actions:
             # figure out the next state and see whether it's legal
@@ -173,22 +176,27 @@ class UCSFoodSearchAgent(SearchAgent):
     def is_next_action_die(self, state, action):
         ghost_positions = [(int(x), int(y)) for (x, y) in state.getGhostPositions()]
         current_position = state.getPacmanPosition()
+        danger_range = 2
         for position in ghost_positions:
-            if action == Directions.WEST and (current_position[0] - 1, current_position[1]) == position:
+            if action == Directions.WEST and (current_position[0] - danger_range, current_position[1]) == position:
                 return True
-            if (action == Directions.WEST or action == Directions.NORTH) and (current_position[0] - 1, current_position[1] + 1) == position:
+            if (action == Directions.WEST or action == Directions.NORTH) and (
+                    current_position[0] - danger_range, current_position[1] + danger_range) == position:
                 return True
-            if action == Directions.NORTH and (current_position[0], current_position[1] + 1) == position:
+            if action == Directions.NORTH and (current_position[0], current_position[1] + danger_range) == position:
                 return True
-            if (action == Directions.EAST or action == Directions.NORTH) and (current_position[0] + 1, current_position[1] + 1) == position:
+            if (action == Directions.EAST or action == Directions.NORTH) and (
+                    current_position[0] + danger_range, current_position[1] + danger_range) == position:
                 return True
-            if action == Directions.EAST and (current_position[0] + 1, current_position[1]) == position:
+            if action == Directions.EAST and (current_position[0] + danger_range, current_position[1]) == position:
                 return True
-            if (action == Directions.EAST or action == Directions.SOUTH) and (current_position[0] + 1, current_position[1] - 1) == position:
+            if (action == Directions.EAST or action == Directions.SOUTH) and (
+                    current_position[0] + danger_range, current_position[1] - danger_range) == position:
                 return True
-            if action == Directions.SOUTH and (current_position[0], current_position[1] - 1) == position:
+            if action == Directions.SOUTH and (current_position[0], current_position[1] - danger_range) == position:
                 return True
-            if (action == Directions.WEST or action == Directions.SOUTH) and (current_position[0] - 1, current_position[1] - 1) == position:
+            if (action == Directions.WEST or action == Directions.SOUTH) and (
+                    current_position[0] - danger_range, current_position[1] - danger_range) == position:
                 return True
         pass
 
@@ -201,6 +209,7 @@ class AStarFoodSearchAgent(SearchAgent):
 def foodHeuristic(state, problem):
     # TODO
     pass
+
 
 def ghostHeuristic(state, problem):
     # TODO
