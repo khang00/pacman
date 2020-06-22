@@ -185,6 +185,14 @@ class AStarFoodSearchAndGhostEvadeAgent(SearchAgent):
         self.registerInitialState(state)
         return self.actions[0]
 
+class AStarSwitchingModeAgent(SearchAgent):
+    def __init__(self, fn='aStarSearch', prob='FoodSearchProblem', heuristic='foodHeuristic'):
+        SearchAgent.__init__(self, fn, prob, heuristic)
+
+    def getAction(self, state):
+        self.registerInitialState(state)
+        return self.actions[0]
+
 def ghostEvadeAndFoodSearchHeuristic(state, problem):
     ghost = ghostHeuristic(state, problem)
     food = foodHeuristic(state, problem)
