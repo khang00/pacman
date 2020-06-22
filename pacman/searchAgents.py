@@ -177,6 +177,20 @@ class AStarGhostEvadeAgent(SearchAgent):
         self.registerInitialState(state)
         return self.actions[0]
 
+class AStarFoodSearchAndGhostEvadeAgent(SearchAgent):
+    def __init__(self, fn='aStarSearch', prob='FoodSearchProblem', heuristic='ghostEvadeAndFoodSearchHeuristic'):
+        SearchAgent.__init__(self, fn, prob, heuristic)
+
+    def getAction(self, state):
+        self.registerInitialState(state)
+        return self.actions[0]
+
+def ghostEvadeAndFoodSearchHeuristic(state, problem):
+    ghost = ghostHeuristic(state, problem)
+    food = foodHeuristic(state, problem)
+    if ghost == 0:
+        ghost = 1
+    return food / (1 / ghost)
 
 def foodHeuristic(state, problem):
     heuristic = manhattanDistance(state[0][0], problem.foodPosition[0])
