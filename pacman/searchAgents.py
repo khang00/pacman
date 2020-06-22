@@ -1,3 +1,4 @@
+from __future__ import division
 from game import Directions
 from game import Agent
 from game import Actions
@@ -172,6 +173,10 @@ class AStarGhostEvadeAgent(SearchAgent):
     def __init__(self, fn='aStarSearch', prob='FoodSearchProblem', heuristic='ghostHeuristic'):
         SearchAgent.__init__(self, fn, prob, heuristic)
 
+    def getAction(self, state):
+        self.registerInitialState(state)
+        return self.actions[0]
+
 
 def foodHeuristic(state, problem):
     heuristic = manhattanDistance(state[0][0], problem.foodPosition[0])
@@ -181,8 +186,14 @@ def foodHeuristic(state, problem):
 
 def ghostHeuristic(state, problem):
     heuristic = manhattanDistance(state[0][0], problem.ghostPositions[0])
+    for ghostPos in problem.ghostPositions:
+        heuristic = min(heuristic, manhattanDistance(state[0][0], ghostPos))
+
     detect_range = 3
+    if heuristic == 0:
+        return 9999999
+
     if heuristic > detect_range:
         return 0
     else:
-        return heuristic % detect_range
+        return 1 / heuristic

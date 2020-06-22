@@ -93,7 +93,7 @@ def compute_actions(path, goal):
     while path[i][1] != Directions.STOP:
         actions.insert(0, path[i][1])
         i = path[i]
-    return [actions[0]]
+    return actions
 
 
 def nullHeuristic(state, problem=None):
