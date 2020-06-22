@@ -2,10 +2,11 @@
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
-
+from __future__ import division
 from collections import defaultdict
 from game import Directions
 from util import PriorityQueue
+from util import manhattanDistance
 import util
 n = Directions.NORTH
 s = Directions.SOUTH
@@ -124,6 +125,28 @@ def aStarSearch(problem, heuristic):
                 path[state] = current_state
     return [Directions.STOP]
 
+def aStarSearchSwitching(problem, heuristic):
+    ghostEvadePath = aStarSearch(problem, ghostHeuristic)
+    if ghostEvadePath != [Directions.STOP]:
+        print 'ghost evade mode'
+        return ghostEvadePath
+    else:
+        print 'find food mode'
+        return aStarSearch(problem, heuristic)
+
+def ghostHeuristic(state, problem):
+    heuristic = manhattanDistance(state[0][0], problem.ghostPositions[0])
+    for ghostPos in problem.ghostPositions:
+        heuristic = min(heuristic, manhattanDistance(state[0][0], ghostPos))
+
+    detect_range = 3
+    if heuristic == 0:
+        return 9999999
+
+    if heuristic > detect_range:
+        return 0
+    else:
+        return 1 / heuristic
 
 # Abbreviations
 bfs = breadthFirstSearch
