@@ -61,11 +61,45 @@ class SearchProblem:
 
 
 def depthFirstSearch(problem):
-    return [Directions.EAST, Directions.EAST]
+    frontier = util.Stack()
+    expanded = []
+    path = []
+    frontier.push((problem.getStartState(), []))
+    while not frontier.isEmpty():
+        node, path = frontier.pop()
+        if problem.isGoalState(node):
+            return path
+        else:
+            if node not in expanded:
+                expanded.append(node)
+                successors = problem.getSuccessors(node)
+                for successor in successors:
+                    child = successor[0]
+                    child_path = successor[1]
+                    full_path = path + [child_path]
+                    frontier.push((child, full_path))
+    return path
 
 
 def breadthFirstSearch(problem):
-    return [Directions.EAST, Directions.EAST]
+    frontier = util.Queue()
+    expanded = []
+    path = []
+    frontier.push((problem.getStartState(), []))
+    while not frontier.isEmpty():
+        node, path = frontier.pop()
+        if problem.isGoalState(node):
+            return path
+        else:
+            if node not in expanded:
+                expanded.append(node)
+                successors = problem.getSuccessors(node)
+                for successor in successors:
+                    child = successor[0]
+                    child_path = successor[1]
+                    full_path = path + [child_path]
+                    frontier.push((child, full_path))
+    return path
 
 
 def uniformCostSearch(problem):

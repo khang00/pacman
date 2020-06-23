@@ -3,7 +3,7 @@
 Python 2.7 is required to run this project.
 To run type in the terminal of the current pacman folder:
 ```
-python2 pacman.py -p [ AgentClass ] -l [ LayoutFile ] -n [ number of runs ]
+python2 pacman.py -p [ AgentClass ] -l [ LayoutFile ] -n [ number of runs ] -k [ number of ghosts ]
 
 AgentClass: in the searchAgents.py
 LayoutFile: in the layouts folder
