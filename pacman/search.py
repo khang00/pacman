@@ -108,6 +108,8 @@ def is_next_move_die(next_position, ghost_positions):
 
 
 def compute_actions(path, goal):
+    if not path:
+        return [Directions.STOP]
     actions = []
     i = goal
     actions.insert(0, goal[1])

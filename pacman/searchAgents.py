@@ -148,57 +148,8 @@ class UCSFoodSearchAgent(SearchAgent):
         SearchAgent.__init__(self, fn, prob, heuristic)
 
     def getAction(self, state):
-        """
-        Returns the next action in the path chosen earlier (in
-        registerInitialState).  Return Directions.STOP if there is no further
-        action to take.
-
-        state: a GameState object (pacman.py)
-        """
-        if 'actionIndex' not in dir(self):
-            SearchAgent.actionIndex = 0
-        i = self.actionIndex
-        self.actionIndex += 1
-        if i < len(self.actions):
-            if self.is_next_action_die(state, self.actions[i]):
-                self.registerInitialState(state)
-                self.actionIndex = 0
-                i = self.actionIndex
-                self.actionIndex += 1
-            return self.actions[i]
-        else:
-            self.registerInitialState(state)
-            self.actionIndex = 0
-            i = self.actionIndex
-            self.actionIndex += 1
-        return self.actions[i]
-
-    def is_next_action_die(self, state, action):
-        ghost_positions = [(int(x), int(y)) for (x, y) in state.getGhostPositions()]
-        current_position = state.getPacmanPosition()
-        danger_range = 2
-        for position in ghost_positions:
-            if action == Directions.WEST and (current_position[0] - danger_range, current_position[1]) == position:
-                return True
-            if (action == Directions.WEST or action == Directions.NORTH) and (
-                    current_position[0] - danger_range, current_position[1] + danger_range) == position:
-                return True
-            if action == Directions.NORTH and (current_position[0], current_position[1] + danger_range) == position:
-                return True
-            if (action == Directions.EAST or action == Directions.NORTH) and (
-                    current_position[0] + danger_range, current_position[1] + danger_range) == position:
-                return True
-            if action == Directions.EAST and (current_position[0] + danger_range, current_position[1]) == position:
-                return True
-            if (action == Directions.EAST or action == Directions.SOUTH) and (
-                    current_position[0] + danger_range, current_position[1] - danger_range) == position:
-                return True
-            if action == Directions.SOUTH and (current_position[0], current_position[1] - danger_range) == position:
-                return True
-            if (action == Directions.WEST or action == Directions.SOUTH) and (
-                    current_position[0] - danger_range, current_position[1] - danger_range) == position:
-                return True
-        pass
+        self.registerInitialState(state)
+        return self.actions[0]
 
 
 class AStarFoodSearchAgent(SearchAgent):
