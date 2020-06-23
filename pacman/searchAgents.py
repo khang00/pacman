@@ -7,6 +7,7 @@ from collections import defaultdict
 import sys
 import util
 import time
+
 import search
 import random
 
@@ -17,11 +18,13 @@ class GoWestAgent(Agent):
         else:
             return Directions.STOP
 
+
 class RandomAgent(Agent):
     def getAction(self, state):
         actions = state.getLegalPacmanActions()
         random.shuffle(actions)
         return actions[0]
+
 
 class SearchAgent(Agent):
     def __init__(self, fn='uniformCostSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
@@ -40,7 +43,7 @@ class SearchAgent(Agent):
                 raise AttributeError, heuristic + ' is not a function in searchAgents.py or search.py.'
             print('[SearchAgent] using function %s and heuristic %s' % (fn, heuristic))
             self.searchFunction = lambda x: func(x, heuristic=heur)
-        
+
         if prob not in globals().keys() or not prob.endswith('Problem'):
             raise AttributeError, prob + ' is not a search problem type in SearchAgents.py.'
         self.searchType = globals()[prob]
@@ -57,8 +60,8 @@ class SearchAgent(Agent):
         """
         if self.searchFunction == None: raise Exception, "No search function provided for SearchAgent"
         starttime = time.time()
-        problem = self.searchType(state) # Makes a new search problem
-        self.actions  = self.searchFunction(problem) # Find a path
+        problem = self.searchType(state)  # Makes a new search problem
+        self.actions = self.searchFunction(problem)  # Find a path
         totalCost = problem.getCostOfActions(self.actions)
         print('Path found with total cost of %d in %.1f seconds' % (totalCost, time.time() - starttime))
         if '_expanded' in dir(problem): print('Search nodes expanded: %d' % problem._expanded)
@@ -93,6 +96,7 @@ class FoodSearchProblem:
       pacmanPosition: a tuple (x,y) of integers specifying Pacman's position
       foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food
     """
+
     def __init__(self, startingGameState):
         self.start = (startingGameState.getPacmanPosition(), startingGameState.getFood())
         self.walls = startingGameState.getWalls()
@@ -163,6 +167,10 @@ class DFSFoodSearchAgent(SearchAgent):
 class UCSFoodSearchAgent(SearchAgent):
     def __init__(self, fn='uniformCostSearch', prob='FoodSearchProblem', heuristic='nullHeuristic'):
         SearchAgent.__init__(self, fn, prob, heuristic)
+
+    def getAction(self, state):
+        self.registerInitialState(state)
+        return self.actions[0]
 
 
 class AStarFoodSearchAgent(SearchAgent):

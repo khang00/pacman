@@ -4,6 +4,9 @@ Pacman agents (in searchAgents.py).
 """
 from __future__ import division
 from collections import defaultdict
+from util import Stack
+from time import sleep
+
 from game import Directions
 from util import PriorityQueue
 from util import manhattanDistance
@@ -75,14 +78,33 @@ def uniformCostSearch(problem):
         current_state = frontier.pop()
         expanded.append(current_state)
         current_cost = current_cost + current_state[2]
+        # return a path to food OR
+        # if all path to ghost are blocked by ghosts just go whatever path with farthest from the ghost
         if problem.isGoalState(current_state[0]):
             return compute_actions(path, current_state)
         successors = problem.getSuccessors(current_state[0])
         for state in successors:
             if state not in expanded and not frontier.does_contain(state):
+                # For evading of ghosts
+                if is_next_move_die(state[0][0], problem.ghostPositions):
+                    if state[0][0] in problem.ghostPositions:
+                        frontier.push(state, current_cost + state[2] + 9999999)
+                    else:
+                        frontier.push(state, current_cost + state[2] + 99999)
+                else:
+                    frontier.push(state, current_cost + state[2])
                 frontier.push(state, current_cost + state[2])
                 path[state] = current_state
     return path
+
+
+def is_next_move_die(next_position, ghost_positions):
+    for position in ghost_positions:
+        x, y = position
+        if next_position == (x + 1, y) or next_position == (x - 1, y):
+            return True
+        if next_position == (x, y - 1) or next_position == (x, y + 1):
+            return True
 
 
 def compute_actions(path, goal):
