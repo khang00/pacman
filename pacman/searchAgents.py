@@ -4,6 +4,7 @@ from game import Agent
 from game import Actions
 from util import manhattanDistance
 from collections import defaultdict
+from APSP import Graph, Coordinate
 import sys
 import util
 import time
@@ -103,9 +104,37 @@ class FoodSearchProblem:
         self.ghostPositions = [(int(x), int(y)) for (x, y) in startingGameState.getGhostPositions()]
         self.startingGameState = startingGameState
         self._expanded = 0 # DO NOT CHANGE
-        self.heuristicInfo = defaultdict(list)  # A dictionary for the heuristic to store information
+        self.heuristicInfo = None  # A dictionary for the heuristic to store information
         self.foodPosition = []
+        self.computeFoodPositions()
+        self.computeHeuristicInfo()
 
+    def computeHeuristicInfo(self):
+        graph = Graph(height=self.walls.height, width=self.walls.width)
+        for (x, row) in enumerate(self.walls.data):
+            for (y, value) in enumerate(self.walls.data[x]):
+                currentCoordinate = Coordinate(x, y)
+                if value:
+                    graph.addEdge(currentCoordinate, currentCoordinate, 0)
+                else:
+                    for neighborsCoordinate in self.getAllNeighbors(currentCoordinate):
+                        graph.addEdge(currentCoordinate, neighborsCoordinate, 1)
+        self.heuristicInfo = graph
+
+    def getAllNeighbors(self, coordinate):
+        neighbors = []
+        (x, y) = coordinate
+        if x + 1 < self.walls.width and not self.walls.data[x + 1][y]:
+            neighbors.append(Coordinate(x + 1, y))
+        if x - 1 >= 0 and not self.walls.data[x - 1][y]:
+            neighbors.append(Coordinate(x - 1, y))
+        if y + 1 < self.walls.height and not self.walls.data[x][y + 1]:
+            neighbors.append(Coordinate(x, y + 1))
+        if y - 1 >= 0 and not self.walls.data[x][y - 1]:
+            neighbors.append(Coordinate(x, y - 1))
+        return neighbors
+
+    def computeFoodPositions(self):
         for x in range(0, self.start[1].width):
             for y in range(0, self.start[1].height):
                 if self.start[1].data[x][y]:
@@ -185,6 +214,7 @@ class AStarFoodSearchAndGhostEvadeAgent(SearchAgent):
         self.registerInitialState(state)
         return self.actions[0]
 
+
 class AStarSwitchingModeAgent(SearchAgent):
     def __init__(self, fn='aStarSearchSwitching', prob='FoodSearchProblem', heuristic='foodHeuristic'):
         SearchAgent.__init__(self, fn, prob, heuristic)
@@ -193,6 +223,14 @@ class AStarSwitchingModeAgent(SearchAgent):
         self.registerInitialState(state)
         return self.actions[0]
 
+
+class AStarAPSPAgent(SearchAgent):
+    def __init__(self, fn='aStarSearchSwitching', prob='FoodSearchProblem', heuristic='foodHeuristic'):
+        SearchAgent.__init__(self, fn, prob, heuristic)
+
+    def getAction(self, state):
+        self.registerInitialState(state)
+        return self.actions[0]
 
 def ghostEvadeAndFoodSearchHeuristic(state, problem):
     ghost = ghostHeuristic(state, problem)

@@ -50,26 +50,22 @@ class Graph:
 
         self.number_of_vertices = (height * width) * (height * width)
 
-    def print_distance_matrix(self):
-        for coordinate_a in self.distance_matrix:
-            for coordinate_b in self.distance_matrix:
-                print(self.distance_matrix[coordinate_a][coordinate_b], end=" ")
-            print()
-        print()
+    def getDistanceMatrix(self):
+        return self.distance_matrix
 
-    def print_graph_matrix(self):
-        for coordinate_a in self.graph_matrix:
-            for coordinate_b in self.graph_matrix:
-                print(self.graph_matrix[coordinate_a][coordinate_b], end=" ")
-            print()
+    def getGraphMatrix(self):
+        return self.graph_matrix
 
-    def add_edge(self, u, v, d):
+    def getDijkstraDistance(self, source, destination):
+        return self.distance_matrix[source][destination]
+
+    def addEdge(self, u, v, d):
         self.graph_matrix[u][v] = d
         self.graph_matrix[v][u] = d
         self.graph_matrix[u][u] = 0
         self.graph_matrix[v][v] = 0
 
-    def all_pair_shortest_path(self):
+    def computeAllPairShortestPath(self):
         for y in range(0, self.height):
             for x in range(0, self.width):
                 self.dijkstra(Coordinate(x, y))
@@ -91,7 +87,7 @@ class Graph:
                         if sum_edge < self.distance_matrix[source][vertex]:
                             self.distance_matrix[source][vertex] = sum_edge
             else:
-                for neighbour in self.get_neighbors(current_vertex):
+                for neighbour in self.getNeighbors(current_vertex):
                     if self.distance_matrix[source][current_vertex] == INF:
                         sum_edge = self.graph_matrix[current_vertex][neighbour]
                     else:
@@ -102,38 +98,9 @@ class Graph:
                         queue.push(neighbour)
         self.flag[source] = 1
 
-    def sum_distance_edges(self, a, b):
-        if self.distance_matrix[a[0]][a[1]] == INF:
-            return self.graph_matrix[b[0]][b[1]]
-        else:
-            return self.distance_matrix[a[0]][a[1]] + self.graph_matrix[b[0]][b[1]]
-
-    def get_neighbors(self, u):
+    def getNeighbors(self, u):
         neighbors = []
         for (distance, v) in enumerate(self.graph_matrix[u]):
             if distance != INF:
                 neighbors.append(v)
         return neighbors
-
-
-def main():
-    graph = read_graph_from_file("input", "r")
-    graph.all_pair_shortest_path()
-    graph.print_graph_matrix()
-    print("------------------------------")
-    graph.print_distance_matrix()
-
-
-def read_graph_from_file(file_name, mode):
-    file = open(file_name, mode)
-    n = [int(x) for x in next(file).split()]
-    graph = Graph(n[0], n[0])
-    for line in file:
-        x, y, x1, y1, d = [int(it) for it in line.strip().split(' ')]
-        graph.add_edge(Coordinate(x, y), Coordinate(x1, y1), d)
-    file.close()
-    return graph
-
-
-if __name__ == '__main__':
-    main()
