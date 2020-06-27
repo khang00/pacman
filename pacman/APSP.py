@@ -56,8 +56,22 @@ class Graph:
     def getGraphMatrix(self):
         return self.graph_matrix
 
+    def printGraphMatrix(self):
+        for coordinate_a in self.graph_matrix:
+            for coordinate_b in self.graph_matrix:
+                print self.graph_matrix[coordinate_a][coordinate_b],
+            print
+        print
+
     def getDijkstraDistance(self, source, destination):
         return self.distance_matrix[source][destination]
+
+    def printDistanceMatrix(self):
+        for coordinate_a in self.distance_matrix:
+            for coordinate_b in self.distance_matrix:
+                print self.distance_matrix[coordinate_a][coordinate_b],
+            print
+        print
 
     def addEdge(self, u, v, d):
         self.graph_matrix[u][v] = d

@@ -117,8 +117,10 @@ class FoodSearchProblem:
                 if value:
                     graph.addEdge(currentCoordinate, currentCoordinate, 0)
                 else:
-                    for neighborsCoordinate in self.getAllNeighbors(currentCoordinate):
-                        graph.addEdge(currentCoordinate, neighborsCoordinate, 1)
+                    for neighborCoordinate in self.getAllNeighbors(currentCoordinate):
+                        graph.addEdge(currentCoordinate, neighborCoordinate, 1)
+        graph.computeAllPairShortestPath()
+        graph.printGraphMatrix()
         self.heuristicInfo = graph
 
     def getAllNeighbors(self, coordinate):
@@ -240,9 +242,9 @@ def ghostEvadeAndFoodSearchHeuristic(state, problem):
     return food / (1 / ghost)
 
 def foodHeuristic(state, problem):
-    heuristic = manhattanDistance(state[0][0], problem.foodPosition[0])
+    heuristic = problem.heuristicInfo.getDijkstraDistance(state[0][0], problem.foodPosition[0])
     for foodPos in problem.foodPosition:
-        heuristic = min(heuristic, manhattanDistance(state[0][0], foodPos))
+        heuristic = min(heuristic, problem.heuristicInfo.getDijkstraDistance(state[0][0], foodPos))
     return heuristic
 
 def ghostHeuristic(state, problem):
