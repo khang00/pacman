@@ -110,14 +110,6 @@ class FoodSearchProblem:
             for y in range(0, self.start[1].height):
                 if self.start[1].data[x][y]:
                     self.foodPosition.append((x, y))
-        '''
-        for x in range(0, self.start[1].width):
-            for y in range(0, self.start[1].height):
-                heuristic = 0
-                for foodPos in self.foodPosition:
-                    heuristic = heuristic + manhattanDistance((x, y), foodPos)
-                self.heuristicInfo[(x, y)] = heuristic
-        '''
 
     def getStartState(self):
         return self.start

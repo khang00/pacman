@@ -85,7 +85,7 @@ def breadthFirstSearch(problem):
     frontier = util.Queue()
     expanded = []
     path = []
-    frontier.push((problem.getStartState(), []))
+    frontier.push((problem.getStartState(), path))
     while not frontier.isEmpty():
         node, path = frontier.pop()
         if problem.isGoalState(node):
