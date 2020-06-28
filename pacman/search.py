@@ -184,19 +184,37 @@ def aStarSearchSwitching(problem, heuristic):
         print 'find food mode'
         return aStarSearch(problem, heuristic)
 
-def ghostHeuristic(state, problem):
-    heuristic = manhattanDistance(state[0][0], problem.ghostPositions[0])
-    for ghostPos in problem.ghostPositions:
-        heuristic = min(heuristic, manhattanDistance(state[0][0], ghostPos))
 
-    detect_range = 3
-    if heuristic == 0:
+def gradientDescent(problem, heuristic):
+    frontier = PriorityQueue()
+    expanded = []
+    path = defaultdict(list)
+    current_cost = 0
+    start_state = (problem.getStartState(), Directions.STOP, 0)
+    frontier.push(start_state, heuristic(start_state, problem) + current_cost)
+    current_state = frontier.pop()
+    expanded.append(current_state)
+    current_cost = current_cost + current_state[2]
+    successors = problem.getSuccessors(current_state[0])
+    for state in successors:
+        if state not in expanded and not frontier.does_contain(state):
+            frontier.push(state, heuristic(state, problem) + current_cost)
+            path[state] = current_state
+    return compute_actions(path, frontier.pop())
+
+def ghostHeuristic(state, problem):
+    ghostHeuristics = problem.heuristicInfo.getDijkstraDistance(state[0][0], problem.ghostPositions[0])
+    for ghostPos in problem.ghostPositions:
+        ghostHeuristics = min(ghostHeuristics, problem.heuristicInfo.getDijkstraDistance(state[0][0], ghostPos))
+
+    detect_range = 2
+    if ghostHeuristics == 0:
         return 9999999
 
-    if heuristic > detect_range:
+    if ghostHeuristics > detect_range:
         return 0
     else:
-        return 1 / heuristic
+        return 1 / ghostHeuristics
 
 # Abbreviations
 bfs = breadthFirstSearch

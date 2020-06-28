@@ -48,6 +48,7 @@ class SearchAgent(Agent):
         if prob not in globals().keys() or not prob.endswith('Problem'):
             raise AttributeError, prob + ' is not a search problem type in SearchAgents.py.'
         self.searchType = globals()[prob]
+        self.heuristicInfo = None
         print('[SearchAgent] using problem type ' + prob)
 
     def registerInitialState(self, state):
@@ -61,7 +62,7 @@ class SearchAgent(Agent):
         """
         if self.searchFunction == None: raise Exception, "No search function provided for SearchAgent"
         starttime = time.time()
-        problem = self.searchType(state)  # Makes a new search problem
+        problem = self.searchType(state)
         self.actions = self.searchFunction(problem)  # Find a path
         totalCost = problem.getCostOfActions(self.actions)
         print('Path found with total cost of %d in %.1f seconds' % (totalCost, time.time() - starttime))
@@ -98,16 +99,17 @@ class FoodSearchProblem:
       foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food
     """
 
-    def __init__(self, startingGameState):
+    def __init__(self, startingGameState, heuristicFlag=False, heuristicInfo=None):
         self.start = (startingGameState.getPacmanPosition(), startingGameState.getFood())
         self.walls = startingGameState.getWalls()
         self.ghostPositions = [(int(x), int(y)) for (x, y) in startingGameState.getGhostPositions()]
         self.startingGameState = startingGameState
         self._expanded = 0 # DO NOT CHANGE
-        self.heuristicInfo = None  # A dictionary for the heuristic to store information
+        self.heuristicInfo = heuristicInfo  # A dictionary for the heuristic to store information
         self.foodPosition = []
         self.computeFoodPositions()
-        self.computeHeuristicInfo()
+        if heuristicInfo is None and heuristicFlag:
+            self.computeHeuristicInfo()
 
     def computeHeuristicInfo(self):
         graph = Graph(height=self.walls.height, width=self.walls.width)
@@ -120,7 +122,6 @@ class FoodSearchProblem:
                     for neighborCoordinate in self.getAllNeighbors(currentCoordinate):
                         graph.addEdge(currentCoordinate, neighborCoordinate, 1)
         graph.computeAllPairShortestPath()
-        graph.printGraphMatrix()
         self.heuristicInfo = graph
 
     def getAllNeighbors(self, coordinate):
@@ -226,9 +227,22 @@ class AStarSwitchingModeAgent(SearchAgent):
         return self.actions[0]
 
 
-class AStarAPSPAgent(SearchAgent):
-    def __init__(self, fn='aStarSearchSwitching', prob='FoodSearchProblem', heuristic='foodHeuristic'):
+class GradientDescentAgent(SearchAgent):
+    def __init__(self, fn='aStarSearchSwitching', prob='FoodSearchProblem', heuristic='foodHeuristicDijkstraDistance'):
         SearchAgent.__init__(self, fn, prob, heuristic)
+
+    def registerInitialState(self, state):
+        if self.searchFunction == None: raise Exception, "No search function provided for SearchAgent"
+        starttime = time.time()
+        if self.heuristicInfo is None:
+            problem = self.searchType(state, True, self.heuristicInfo)  # Makes a new search problem
+            self.heuristicInfo = problem.heuristicInfo
+        else:
+            problem = self.searchType(state, True, self.heuristicInfo)
+        self.actions = self.searchFunction(problem)  # Find a path
+        totalCost = problem.getCostOfActions(self.actions)
+        print('Path found with total cost of %d in %.1f seconds' % (totalCost, time.time() - starttime))
+        if '_expanded' in dir(problem): print('Search nodes expanded: %d' % problem._expanded)
 
     def getAction(self, state):
         self.registerInitialState(state)
@@ -252,7 +266,7 @@ def ghostHeuristic(state, problem):
     for ghostPos in problem.ghostPositions:
         heuristic = min(heuristic, manhattanDistance(state[0][0], ghostPos))
 
-    detect_range = 3
+    detect_range = 1
     if heuristic == 0:
         return 9999999
 
@@ -260,3 +274,28 @@ def ghostHeuristic(state, problem):
         return 0
     else:
         return 1 / heuristic
+
+def gradientDescentHeuristic(state, problem):
+    f = 999999999999999999
+    g = 999999999999999999
+    for foodHeuristic in foodHeuristicDijkstraDistance(state, problem):
+        f = min(f, foodHeuristic)
+
+    for ghostHeuristic in ghostHeuristicDijkstraDistance(state, problem):
+        g = min(g, ghostHeuristic)
+
+    if g == 0:
+        g = 1
+    return f / (1 / g)
+
+def foodHeuristicDijkstraDistance(state, problem):
+    foodHeuristics = problem.heuristicInfo.getDijkstraDistance(state[0][0], problem.foodPosition[0])
+    for foodPos in problem.foodPosition:
+        foodHeuristics = min(problem.foodPosition, problem.heuristicInfo.getDijkstraDistance(state[0][0], foodPos))
+    return foodHeuristics
+
+def ghostHeuristicDijkstraDistance(state, problem):
+    ghostHeuristics = []
+    for ghostPos in problem.ghostPositions:
+        ghostHeuristics.append(problem.heuristicInfo.getDijkstraDistance(state[0][0], ghostPos))
+    return ghostHeuristics
