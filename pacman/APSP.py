@@ -1,5 +1,6 @@
 from collections import defaultdict
 from collections import namedtuple
+import threading
 INF = 999999999999
 Coordinate = namedtuple("Coordinate", ["x", "y"])
 
@@ -48,7 +49,7 @@ class Graph:
                 coordinate = Coordinate(x, y)
                 self.flag[coordinate] = 0
 
-        self.number_of_vertices = (height * width) * (height * width)
+        self.number_of_vertices = (height * width)
 
     def getDistanceMatrix(self):
         return self.distance_matrix

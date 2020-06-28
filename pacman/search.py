@@ -203,6 +203,20 @@ def gradientDescent(problem, heuristic):
     return compute_actions(path, frontier.pop())
 
 def ghostHeuristic(state, problem):
+    heuristic = manhattanDistance(state[0][0], problem.ghostPositions[0])
+    for ghostPos in problem.ghostPositions:
+        heuristic = min(heuristic, manhattanDistance(state[0][0], ghostPos))
+
+    detect_range = 1
+    if heuristic == 0:
+        return 9999999
+
+    if heuristic > detect_range:
+        return 0
+    else:
+        return 1 / heuristic
+
+def ghostHeuristicDijkstraDistance(state, problem):
     ghostHeuristics = problem.heuristicInfo.getDijkstraDistance(state[0][0], problem.ghostPositions[0])
     for ghostPos in problem.ghostPositions:
         ghostHeuristics = min(ghostHeuristics, problem.heuristicInfo.getDijkstraDistance(state[0][0], ghostPos))
