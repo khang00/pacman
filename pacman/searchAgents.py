@@ -242,9 +242,9 @@ def ghostEvadeAndFoodSearchHeuristic(state, problem):
     return food / (1 / ghost)
 
 def foodHeuristic(state, problem):
-    heuristic = problem.heuristicInfo.getDijkstraDistance(state[0][0], problem.foodPosition[0])
+    heuristic = manhattanDistance(state[0][0], problem.foodPosition[0])
     for foodPos in problem.foodPosition:
-        heuristic = min(heuristic, problem.heuristicInfo.getDijkstraDistance(state[0][0], foodPos))
+        heuristic = min(heuristic, manhattanDistance(state[0][0], foodPos))
     return heuristic
 
 def ghostHeuristic(state, problem):
