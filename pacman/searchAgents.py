@@ -295,7 +295,15 @@ def foodHeuristicDijkstraDistance(state, problem):
     return foodHeuristics
 
 def ghostHeuristicDijkstraDistance(state, problem):
-    ghostHeuristics = []
+    ghostHeuristics = problem.heuristicInfo.getDijkstraDistance(state[0][0], problem.ghostPositions[0])
     for ghostPos in problem.ghostPositions:
-        ghostHeuristics.append(problem.heuristicInfo.getDijkstraDistance(state[0][0], ghostPos))
-    return ghostHeuristics
+        ghostHeuristics = min(ghostHeuristics, problem.heuristicInfo.getDijkstraDistance(state[0][0], ghostPos))
+
+    detect_range = 2
+    if ghostHeuristics == 0:
+        return 9999999
+
+    if ghostHeuristics > detect_range:
+        return 0
+    else:
+        return 1 / ghostHeuristics
